@@ -1,21 +1,24 @@
 package Library.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
+@Entity
 @Data
 @NoArgsConstructor
+@Table(name = "books")
 public class Book {
-    private static long count = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
 
     public Book(String name, String description) {
-        this.id = count++;
         this.name = name;
         this.description = description;
     }

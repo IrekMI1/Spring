@@ -1,31 +1,17 @@
 package Library.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Entity
 @Data
-@NoArgsConstructor
+@Table(name = "readers")
+@RequiredArgsConstructor
 public class Reader {
-    private static long count = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
-
-    public Reader(String name) {
-        id = count++;
-        this.name = name;
-    }
-
-    @JsonCreator
-    public Reader(long id, String name) {
-        if (id < count) {
-            this.id = count++;
-        } else {
-            this.id = id;
-        }
-        this.name = name;
-    }
 }
