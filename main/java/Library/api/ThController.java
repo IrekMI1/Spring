@@ -1,8 +1,6 @@
 package Library.api;
 
 import Library.model.Book;
-import Library.repository.BooksRepository;
-import Library.repository.ReaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,34 +17,30 @@ public class ThController {
     @Autowired
     private IssueService issueService;
     @Autowired
-    private ReaderRepository readerRepository;
-    @Autowired
     private ReaderService readerService;
-    private final BooksRepository booksRepository;
+    @Autowired
+    private BookService bookService;
 
-    public ThController(BooksRepository booksRepository) {
-        this.booksRepository = booksRepository;
-    }
 
     @GetMapping("/books")
     public String getBooks(Model model) {
-        model.addAttribute("books", booksRepository.getAll());
+        model.addAttribute("books", bookService.getAll());
         return "books";
     }
 
     @GetMapping("/reader")
     public String getReader(Model model) {
-        model.addAttribute("readers", readerRepository.getAll());
+        model.addAttribute("readers", readerService.getAll());
         return "readers";
     }
 
     @GetMapping("/reader/{id}")
-    public String getReaderInfo(@PathVariable long id, Model model) {
+    public String getReaderInfo(@PathVariable Integer id, Model model) {
         List<Book> books = readerService.getReaderIssues(id).stream()
-                .map(it -> booksRepository.getById(it.getBookId()))
+                .map(it -> bookService.getById(it.getBookId()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("reader", readerRepository.getById(id));
+        model.addAttribute("reader", readerService.getById(id));
         model.addAttribute("books", books);
         return "reader";
     }
