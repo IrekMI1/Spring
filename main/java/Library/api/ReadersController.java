@@ -2,46 +2,68 @@ package Library.api;
 
 import Library.model.Issue;
 import Library.model.Reader;
-import Library.repository.ReaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/reader")
 public class ReadersController {
     @Autowired
-    private ReaderService service;
-    private ReaderRepository readers;
+    private final ReaderService service;
 
-    ReadersController(ReaderRepository users) {
-        this.readers = users;
+    ReadersController(ReaderService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Reader> getAll() {
-        return readers.getAll();
+    public ResponseEntity<List<Reader>> getAll() {
+        try {
+            List<Reader> reader = service.getAll();
+            return ResponseEntity.ok(reader);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")
-    public Reader getReader(@PathVariable long id) {
-        return readers.getById(id);
+    public ResponseEntity<Reader> getReader(@PathVariable Integer id) {
+        try {
+            Reader reader = service.getById(id);
+            return ResponseEntity.ok(reader);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}/issue")
-    public List<Issue> getIssues(@PathVariable long id) {
-        return service.getReaderIssues(id);
+    public ResponseEntity<List<Issue>> getIssues(@PathVariable Integer id) {
+        try {
+            List<Issue> issues = service.getReaderIssues(id);
+            return ResponseEntity.ok(issues);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
-        readers.deleteById(id);
+    public ResponseEntity<Objects> delete(@PathVariable Integer id) {
+        try {
+            service.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public void add(@RequestBody Reader reader) {
-        readers.add(reader);
+    public ResponseEntity<Reader> add(@RequestBody Reader reader) {
+        return ResponseEntity.ok(service.add(reader));
     }
-
 }
