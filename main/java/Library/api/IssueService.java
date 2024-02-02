@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class IssueService {
@@ -26,13 +27,13 @@ public class IssueService {
     private long maxAllowedBooks;
 
     public Issue issue(IssueRequest request) {
-        if (booksRepository.getById(request.getBookId()) == null) {
+        if (booksRepository.findById(request.getBookId()).isEmpty()) {
             throw new NoSuchElementException("Не найдена книга с идентификатором " + request.getBookId() + "\n");
         }
-        if (readerRepository.getById(request.getReaderId()) == null) {
+        if (readerRepository.findById(request.getReaderId()).isEmpty()) {
             throw new NoSuchElementException("Не найден читатель с идентификатором " + request.getReaderId() + "\n");
         }
-        if (issueRepository.getAll().stream()
+        if (issueRepository.findAll().stream()
                 .filter(it -> Objects.equals(it.getReaderId(), request.getReaderId())
                         && it.getReturned_at() == null)
                 .toList().size() >= maxAllowedBooks) {
@@ -43,28 +44,30 @@ public class IssueService {
         return issue;
     }
 
-    public Issue getIssue(long id) {
-        Issue issue = issueRepository.getById(id);
-        if (issue == null) {
+    public Issue getIssue(Integer id) {
+        Optional<Issue> issue = issueRepository.findById(id);
+        if (issue.isEmpty()) {
             throw new NoSuchElementException("Запись с номером " + id + " не найдена \n");
         }
-        return issue;
+        return issue.get();
     }
 
     public List<Issue> getAll() {
-        List<Issue> issues = issueRepository.getAll();
+        List<Issue> issues = issueRepository.findAll();
         if (issues.isEmpty()) {
             throw new NoSuchElementException("Нет записей");
         }
         return issues;
     }
 
-    public Issue returnBook(long id) {
-        Issue issue = issueRepository.getById(id);
-        if (issue == null) {
+    public Issue returnBook(Integer id) {
+        Optional<Issue> issueOpt = issueRepository.findById(id);
+        if (issueOpt.isEmpty()) {
             throw new NoSuchElementException("Нет записи о получении книги.");
         }
+        Issue issue = issueOpt.get();
         issue.setReturned_at(LocalDateTime.now());
+        issueRepository.save(issue);
         return issue;
     }
 }

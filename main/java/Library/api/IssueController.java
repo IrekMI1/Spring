@@ -32,7 +32,7 @@ public class IssueController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Issue> returnBook(@PathVariable long id) {
+    public ResponseEntity<Issue> returnBook(@PathVariable Integer id) {
         System.out.println("Получен запрос на возврат книги, номер записи: " + id);
         Issue issue;
         try {
@@ -55,7 +55,7 @@ public class IssueController {
     }
 
     @GetMapping("{issueId}")
-    public ResponseEntity<Issue> getIssue(@PathVariable long issueId) {
+    public ResponseEntity<Issue> getIssue(@PathVariable Integer issueId) {
         Issue issue;
         try {
             issue = service.getIssue(issueId);
