@@ -1,37 +1,55 @@
 package Library.api;
 
 import Library.model.Book;
-import Library.repository.BooksRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/book")
 public class BooksController {
-    private final BooksRepository books;
+    private final BookService bookService;
 
-    public BooksController(BooksRepository books) {
-        this.books = books;
+    public BooksController(BookService books) {
+        this.bookService = books;
     }
 
     @GetMapping
-    public List<Book> getBooks() {
-        return books.getAll();
+    public ResponseEntity<List<Book>> getAll() {
+        try {
+            List<Book> books = bookService.getAll();
+            return ResponseEntity.ok(books);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")
-    public Book getBook(@PathVariable long id) {
-        return books.getById(id);
+    public ResponseEntity<Book> getBook(@PathVariable Integer id) {
+        try {
+            Book book = bookService.getById(id);
+            return ResponseEntity.ok(book);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable long id) {
-        books.delete(id);
+    public ResponseEntity<Object> deleteById(@PathVariable Integer id) {
+        try {
+            bookService.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public void addBook(@RequestBody Book book) {
-        books.add(book);
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
+        Book savedBook = bookService.addBook(book);
+        return ResponseEntity.ok(savedBook);
     }
 }
