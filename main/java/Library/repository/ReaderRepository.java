@@ -1,45 +1,15 @@
 package Library.repository;
 
-import Library.model.Book;
 import Library.model.Reader;
-import jakarta.annotation.PostConstruct;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Repository
-public class ReaderRepository {
-    private List<Reader> readers;
+public interface ReaderRepository extends JpaRepository<Reader, Integer> {
 
-    public ReaderRepository() {
-        readers = new ArrayList<>();
-    }
+    public Optional<Reader> findById(Integer id);
 
-    @PostConstruct
-    public void generateReaders() {
-        readers.addAll(List.of(
-                new Reader("Игорь"),
-                new Reader("Коля")));
-    }
-
-    public List<Reader> getAll() {
-        return readers;
-    }
-
-    public Reader getById(long id) {
-        return readers.stream()
-                .filter(it -> Objects.equals(it.getId(), id))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public void deleteById(long id) {
-        readers.removeIf(it -> Objects.equals(it.getId(), id));
-    }
-
-    public void add(Reader reader) {
-        readers.add(reader);
-    }
+    public void deleteById(Integer id);
 }
