@@ -14,7 +14,9 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/ui/**").authenticated()
+                        .requestMatchers("/reader/**").hasAuthority("reader")
+                        .requestMatchers("/issue/**").hasAuthority("admin")
+                        .requestMatchers("/book/**").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .build();
