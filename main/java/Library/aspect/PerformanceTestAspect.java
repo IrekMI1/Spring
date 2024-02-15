@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 public class PerformanceTestAspect {
     @Pointcut("within(@Library.aspect.Timer *)")
     public void annotatedBeans() {
-
     }
 
     @Pointcut("@annotation(Library.aspect.Timer)")
-    public void annotatedMethods() {}
+    public void annotatedMethods() {
+    }
 
     @Around("annotatedBeans() || annotatedMethods()")
     public Object performanceTest(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -28,7 +28,7 @@ public class PerformanceTestAspect {
             log.info("{} - {} #({})", joinPoint.getClass(), joinPoint.getSignature().getName(), elapsedTime);
             return result;
         } catch (Throwable e) {
-            log.info("exception: {}, {}", e.getClass(), e.getMessage() );
+            log.info("exception: {}, {}", e.getClass(), e.getMessage());
             throw e;
         }
     }
